@@ -1,0 +1,121 @@
+-------------------------------------------------------------------------------------------------------------------------------
+[1] Fundamental concepts of processes and threads
+-------------------------------------------------------------------------------------------------------------------------------
+    A. Application and its parallel tasks abstracted as process and threads in OS
+    B. Single-threaded and Multi-threaded applications
+    C. Representation of process and threads in memory
+    ---------------------------------------------------------------------------------------------------------------------------
+
+    [A] 
+    [Application and its parallel tasks abstracted as process and threads in OS] 
+    [Application Level]                                 ~~~~~~~~~~~~~       [OS level]
+    1. An instance of application in execution          abstracted as       A Process in OS
+    2. Parallel tasks in the application                abstracted as       Threads of the process in OS
+
+    Processes and threads are OS level concepts.
+    "A process represents an instance of application in execution"
+    More than one instance of the application can be running at the same time in the OS, 
+    then each instance will be abstracted as a process in OS.
+
+    "A thread represents a fundamental unit of execution."
+    The application when programmed, can be in a way that it can have multiple tasks or units of execution that run in parallel.
+    These multiple tasks or units of execution are spawned as threads of the process in the operating system. The multiple threads 
+    of a process can run in parallel if the underlying hardware allows.
+    
+    [B]
+    [Single-threaded or Multi-threaded applications]
+    An application when programmed, can be coded either to be a single threaded or multithreaded application. 
+    1. The single threaded applications create a single thread (the main thread) per instance of execution (process) in the OS.
+    2. Multithreaded applications create multiple threads (main thread and the child threads) per instance of execution (process) 
+       in the OS. The main thread owns all the resources of the process.
+
+    [C]
+    [Representation of process and threads in memory]
+    1. Each process has its own :
+        (a)Kernel (b)Stack (c)Heap (d)Data (e)Text sections and PCB: Process control block (Program Counter + CPU registers)
+    2. Each thread has its own:
+        (a) Stack and PCB: Process control block (Program Counter + CPU registers)
+        while they share Kernel, Heap, Data and Text sections with the other threads of the process.
+
+    [D] Note: An application can also be split into multiple processes in a multi-processing model.
+
+-------------------------------------------------------------------------------------------------------------------------------
+[2] CPU architecture and Concurrency
+-------------------------------------------------------------------------------------------------------------------------------
+    A. Single-core and Multi-core CPUs
+    B. Context Switching - Threads of the same process or Threads of different processes
+    C. Concurrency Models
+    
+    [A]
+    [Single-core and Multi-core CPUs]
+    At any instant, a single computational unit (core) can run only one thread at a time.
+    The multiple threads of a process can run in parallel if there are more than one core per CPU. In the modern CPU architecture,
+    each CPU has more than cores. Such CPUs are called multi-core CPUs, which are capable of running multiple threads with core
+    executing a single thread at a time.
+    
+    [B]
+    [Context Switching]
+    Consider the case, [Simplified]
+    when the number of threads spawned by a process are more than the number of cores in the CPU. In this 
+    scenario, a core switches between threads after a fix amount of execution time. The current execution state (Stack + PCB) 
+    of the thread, are stored and the execution state of the thread to be run is restored. This is called a context switching.
+
+    Consider the case, [Actual]
+    there are a number of multithreaded applications running on 4-core CPU, and since each core can run only
+    a single thread at a time then a core will switch between threads and the threads may belong to the same process or different 
+    processes. If the threads belong to different processes then the context switching adds a huge overhead. Since the execution
+    state of a process contains (a)Kernel (b)Stack (c)Heap (d)Data (e)Text sections and PCB, storing and restoring the it becomes
+    a heavy operation. 
+    
+    [C]
+    Concurrency models:
+        Concurrency: Performing multiple tasks at a time.
+        1. Multi-tasking:
+            Context switching of threads on a core belonging to same or different processes.     
+        2. Multi-threading:
+            Multiple core running multiple threads of a process in parallel.
+        3. Hyper-threading
+        4. Multi-processing:
+            A program split into multiple processes running on a distributed memory system in parallel. Multiple processes
+            communicate with each other through interprocess communications channels like files, pipes and message queues.
+
+-------------------------------------------------------------------------------------------------------------------------------
+[3] Multithreading in C++
+-------------------------------------------------------------------------------------------------------------------------------
+    A. Process Vs Threads
+        I. Multiprocessings
+        II. Multithreading
+
+        I. Multiprocessing:
+            Each process has a single thread running.
+            Processes communicate to each other via interprocess communication channels like files, pipes and message queues.
+        
+        II. Multithreading
+            Each process has more than one thread running.
+            The threads communicate to each other via shared memory.
+        
+        Important points regarding the multithreading:
+        Pros:
+        1. Fast to start: 
+            Threads are faster to start than the processes. 
+            Operating system has to allocate resources to start a process.
+        2. Low Overhead: 
+            Threads are easier to manage than the processes.
+            Operating system has to provide a lot of protection to avoid the interference between two processes.
+        3. Fast Communication: 
+            The communication between the threads via shared memory is faster than the interprocess communication between the processes.
+        
+        - Threads are considered lightweight processes because they are faster to start and have low manintenance overhead.
+        - Threads provide better performance than the multiprocessing applications because of the faster communication between them.
+        
+        Cons:
+        1. Difficult to implement:
+            There are some multithreading specific issues that must be carefully handled during the implementation.
+        2. Can't run on distributed systems:
+            A multithreading program can not run on a distributed memory system but a multiprocessing program can be easily distributed
+            over a distributed system and run concurrency.
+
+
+    
+        
+
