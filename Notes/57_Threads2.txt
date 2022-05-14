@@ -34,7 +34,7 @@
             A multithreading program can not run on a distributed memory system but a multiprocessing program can be easily distributed
             over a distributed system and run concurrency.
     
-    [C] [STL <thread>]
+    [B] [STL <thread>]
         1. Creating an object of <thread> class with parameterized constructor. 
             As the thread object is created, the execution of the thread starts immediately. 
             The thread runs until it finishes off its execution.
