@@ -2,7 +2,7 @@
 [3] Multithreading in C++
 -------------------------------------------------------------------------------------------------------------------------------
     [A] [Process Vs Threads]
-        I. Multiprocessings
+        I. Multiprocessing
         II. Multithreading
 
         I. Multiprocessing:
@@ -36,8 +36,8 @@
     
     [B] [STL <thread>]
         1. Creating an object of <thread> class with parameterized constructor. 
-            As the thread object is created, the execution of the thread starts immediately. 
-            The thread runs until it finishes off its execution.
+            - As the thread object is created, the execution of the thread starts immediately. 
+            - The thread runs until it finishes off its execution.
         2. Use diagrams to visualize the threads and their execution.
         3. The main thread owns the resources like standard output.
         4. Joining the child thread (t1) with the main thread (t1.join())
@@ -68,6 +68,7 @@
             - std::this_thread::get_id() // Every C++ thread has an id
             - using namespace std::literals::chrono::literals // for ‘s’
             - std::this_thread::sleep_for(1s) // Sleep the thread for 1s
+            - t1.getId() // Get the id of another thread from the current thread
         9. Important Points:
             (a) The child thread object must be joined or detached with the main thread before it is destroyed.
                 Possible situations leading to the issue.
