@@ -60,6 +60,7 @@
     A. Single-core and Multi-core CPUs
     B. Context Switching - Threads of the same process or Threads of different processes
     C. Concurrency Models
+    D. Hyperthreading
     
     [A]
     [Single-core and Multi-core CPUs]
