@@ -1,4 +1,19 @@
 -------------------------------------------------------------------------------------------------------------------------------
+[0] Why do we need multithreading?
+-------------------------------------------------------------------------------------------------------------------------------
+    Two reasons -
+    1. Parallelism:
+            When we want to do multiple things at the same time which are otherwise impossible with a single threaded application.
+            Like in the problem below:
+            ‘Print to console until user presses the Enter key’
+            This uses std::cin.get() to take user input, and since this method blocks the current thread of execution, 
+            this check needs to be done in a separate thread while the other thread is printing to the console.
+            Important Point: If a thread keeps on executing a command as fast as it can, it will result in 100% CPU consumption 
+            for that thread, which is not great. So better pause/sleep the current thread for sometime after every execution.
+    2. Performance gain:
+            Doing multiple things at the same time increases throughput.
+
+-------------------------------------------------------------------------------------------------------------------------------
 [1] Fundamental concepts of processes and threads
 -------------------------------------------------------------------------------------------------------------------------------
     A. Application and its parallel tasks abstracted as process and threads in OS
@@ -68,7 +83,7 @@
     a heavy operation. 
     
     [C]
-    Concurrency models:
+    [Concurrency models]
         Concurrency: Performing multiple tasks at a time.
         1. Multi-tasking:
             Context switching of threads on a core belonging to same or different processes.     
@@ -83,103 +98,9 @@
             same problem but for different domains. The original domain is split into sub-domains, which are then distributed among
             the processes for solution.
     [D]
-    Hyperthreading:
+    [Hyperthreading]
     In the modern CPU architecture, each physical core can act as two logical units of computation. When a core executes a thread,
     some parts of the core remain idle, so this idle part is used to execute the other thread effectively executing more than one
     thread at a time. This idea is called Hyperthreading. The physical difference between the hyperthreaded cores and any other core,
     is the presence of some extra hardware junk (CPU registers). Hyperthreading increases the throughput but does not double it,
     because it is just using the idle parts of the core which can be (20-30%) or more.
-
--------------------------------------------------------------------------------------------------------------------------------
-[3] Multithreading in C++
--------------------------------------------------------------------------------------------------------------------------------
-    A. Process Vs Threads
-        I. Multiprocessings
-        II. Multithreading
-
-        I. Multiprocessing:
-            Each process has a single thread running.
-            Processes communicate to each other via interprocess communication channels like files, pipes and message queues.
-        
-        II. Multithreading
-            Each process has more than one thread running.
-            The threads communicate to each other via shared memory.
-        
-        Important points regarding the multithreading:
-        Pros:
-        1. Fast to start: 
-            Threads are faster to start than the processes. 
-            Operating system has to allocate resources to start a process.
-        2. Low Overhead: 
-            Threads are easier to manage than the processes.
-            Operating system has to provide a lot of protection to avoid the interference between two processes.
-        3. Fast Communication: 
-            The communication between the threads via shared memory is faster than the interprocess communication between the processes.
-        
-        - Threads are considered lightweight processes because they are faster to start and have low maintenance overhead.
-        - Threads provide better performance than the multiprocessing applications because of the faster communication between them.
-        
-        Cons:
-        1. Difficult to implement:
-            There are some multithreading specific issues that must be carefully handled during the implementation.
-        2. Can't run on distributed systems:
-            A multithreading program can not run on a distributed memory system but a multiprocessing program can be easily distributed
-            over a distributed system and run concurrency.
-    
-    B. Why do we need multithreading?
-        Two reasons -
-        1. Performance gain:
-            Doing multiple things at the same time increases throughput.
-        2. Parallelism:
-            When we want to do multiple things at the same time which are otherwise impossible with a single threaded application.
-            Like in the problem below:
-            ‘Print to console until user presses the Enter key’
-            This uses std::cin.get() to take user input, and since this method blocks the current thread of execution, 
-            this check needs to be done in a separate thread while the other thread is printing to the console.
-            Important Point: If a thread keeps on executing a command as fast as it can, it will result in 100% CPU consumption 
-            for that thread, which is not great. So better pause/sleep the current thread for sometime after every execution.
-
-    C. STL <thread>
-        1. Creating an object of <thread> class with parameterized constructor. 
-            As the thread object is created, the execution of the thread starts immediately. 
-            The thread runs until it finishes off its execution.
-        2. threadName.join()
-            Block the current thread’s execution until the threadName finishes its execution.
-        3. threadName.detach()
-            Makes the thread a daemon process(background process). The thread runs in the OS independent of the application.
-            It is the responsibility of the CSTDLIB to reclaim the resources in use by the thread. Sometimes, some daemon processes 
-            run until the OS is shut down.
-            Note that when multiple independent threads of a process run in parallel, then it becomes hard to predict which thread 
-            will finish the execution first. Since both the threads share the resources, but the thread that owns the resources 
-            (the main) should live long enough so that other threads can use the resources otherwise as the main thread 
-            finishes execution, it submits all the resources to the OS.
-        4. threadName.joinable() returns true if the thread join() or detach() has not been called on the thread yet.
-            A thread can be joined or detached only once in the application.
-            The thread must be join() or detach() before the thread object is destroyed otherwise an exception is thrown. 
-            Refer to the next section for the reasoning.
-        5. std::this_thread is the current thread of execution.
-        6. std::this_thread::get_id()
-        7. std::this_thread:: sleep_for(1s)
-        8. using namespace std::literals::chrono::literals for ‘s’
-        9. C++ thread as a thread of execution. Generally yes but not always. Refer to the next section.
-            Default constructed thread object
-            moved thread 
-            detached thread
-        10. Joining and detaching threads in C++ before the thread object destruction
-            Threading is an OS specific concept.
-            C++ <thread> library method calls translate to the OS level threading methods in the background.
-            C++ thread as a thread of execution (OS concept) [generally but Not always]
-                join()
-                detach()
-            Destruction a ‘joinable()’ thread [neither join() nor detach() is called yet] calls std::terminate(), 
-            which throws an exception. [Reason? User to be explicit about what he wants to do.]
-            Ways in which a C++ thread does not represent a thread of execution
-            - Detached thread - detach()
-            - std::thread object initialized by using the default constructor
-            - thread that has been moved from
-
-
-
-    
-        
-

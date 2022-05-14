@@ -1,0 +1,123 @@
+-------------------------------------------------------------------------------------------------------------------------------
+[3] Multithreading in C++
+-------------------------------------------------------------------------------------------------------------------------------
+    [A] [Process Vs Threads]
+        I. Multiprocessings
+        II. Multithreading
+
+        I. Multiprocessing:
+            Each process has a single thread running.
+            Processes communicate to each other via interprocess communication channels like files, pipes and message queues.
+        
+        II. Multithreading
+            Each process has more than one thread running.
+            The threads communicate to each other via shared memory.
+        
+        Important points regarding the multithreading:
+        Pros:
+        1. Fast to start: 
+            Threads are faster to start than the processes. 
+            Operating system has to allocate resources to start a process.
+        2. Low Overhead: 
+            Threads are easier to manage than the processes.
+            Operating system has to provide a lot of protection to avoid the interference between two processes.
+        3. Fast Communication: 
+            The communication between the threads via shared memory is faster than the interprocess communication between the processes.
+        
+        - Threads are considered lightweight processes because they are faster to start and have low maintenance overhead.
+        - Threads provide better performance than the multiprocessing applications because of the faster communication between them.
+        
+        Cons:
+        1. Difficult to implement:
+            There are some multithreading specific issues that must be carefully handled during the implementation.
+        2. Can't run on distributed systems:
+            A multithreading program can not run on a distributed memory system but a multiprocessing program can be easily distributed
+            over a distributed system and run concurrency.
+    
+    [C] [STL <thread>]
+        1. Creating an object of <thread> class with parameterized constructor. 
+            As the thread object is created, the execution of the thread starts immediately. 
+            The thread runs until it finishes off its execution.
+        2. Use diagrams to visualize the threads and their execution.
+        3. The main thread owns the resources like standard output.
+        4. Joining the child thread (t1) with the main thread (t1.join())
+            - The main thread waits at the line (t1.join()) for the t1 thread to complete its execution.
+            - The main thread does not terminates the program until the child thread is done.
+            - Ensures that the shared resources owned by the main thread are available to the child thread.
+        5. Detaching the child thread (t1) from the main thread (t1.detach())
+            - The child thread is detached from the main thread and runs independently as a daemon process.
+            - In this case, we have to ensure that the main thread runs for sufficient time so that the child thread can finish its
+                execution and shared resources are available to the child thread. This task is hard because the duration
+                of execution of a thread is generally non-deterministic.
+            - C++ run time libary takes the responsibilty of reclaiming the resources used by the daemon process.
+            - Some daemon processes run till the OS shutdown.
+        6. The child thread must be joined or detached at the time object goes out of scope (destroyed).
+            - Reasoning: The developer is forced to define the desired behaviour to avoid the unwanted daemon processes.
+        7. A child can be joined or detached only once.
+            - t1.joinable() returns bool to check if the thread is still joinable or not.
+            - If the thread is not joinable, then the join() method will terminate the program.
+            - Situations in which a thread is not joinable are the situations when
+              the thread does not represent a thread of execution in OS.
+                a. Detached thread - sdetach() called on the thread
+                b. std::thread object created by using the default constructor
+                c. thread that has been moved
+                (Threading is an OS specific concept. C++ <thread> library method calls translate to the OS level threading methods 
+                in the background.)
+        8. Important methods:
+            - std::this_thread::____ methods for the current thread of execution
+            - std::this_thread::get_id() // Every C++ thread has an id
+            - using namespace std::literals::chrono::literals // for ‘s’
+            - std::this_thread::sleep_for(1s) // Sleep the thread for 1s
+        9. Important Points:
+            (a) The child thread object must be joined or detached with the main thread before it is destroyed.
+                Possible situations leading to the issue.
+                    1. Developer missed to join or detach the thread --> can be handled easily.
+                    2. An exception is thrown in the main thread before the child thread object could be joined or detached.
+                        Handling - 
+                            Method 1:
+                                Use try catch block in the main thread before calling the join or detach.
+                                Catch all the exceptions (...) ,and join or detach the thread inside the catch statement
+                                throw the exception from the catch statement.
+                            Method 2: [Better]
+                                Use RAII: "Resource Acquisition Is Initialization"
+                                Create a wrapper over the child thread object creation and call thread join() or detach() in
+                                the destructor.
+                                This guarantees that the thread object will be joined or detached before the deletion.
+            (b) Thread object can be created for any callables.
+                Let's create a thread for a functor. Be careful about the 'Most Vexing Parse' syntax in C++.
+                Creating a functor object directly as an argument for the std::thread constructor creates syntactical ambiguity.
+                    std::thread t1(functor());
+                The above code can be interpreted as a function declaration with function name 't1', return type 'std::thread' and
+                taking a single (unnamed) parameter, whose type is a (pointer to a) function taking no input. 
+                As per C++ standard, 
+                "any statement that can be interpreted as function declaration is considered as a function declaration."
+                This is called as 'Most Vexing Parse' syntax. https://en.wikipedia.org/wiki/Most_vexing_parse
+                The correct way to avoid the ambiguity is:
+                    std::thread t1((functor()));
+            (c) Passing arguments of callables to the thread object:
+                1. Pass by value
+                2. Pass by reference
+                    - The & syntax does not work for std::thread object creation. It passes by value.
+                    - Use std::ref() or pass by address to avoid copy.
+                Both the approaches (1 and 2) above have problems.
+                    - Pass by value creates copy, which is inefficient operation.
+                    - Pass by reference or address creates problems related to memory sharing like data races, which make it unsafe.
+                3. std::move() - Transfer of ownership [safe and efficient approach]
+                    - Moves the actual variable to a new scope when the variable is no longer required in the original scope.
+                In C++, there are some things which can not be copied but only be moved like objects of std::thread class.
+            (d) How to decide the number of threads for a given program?
+                - Ideally, the number of threads = the number of cores.
+                - Oversubsription: More threads than the number of cores. It cause performance degradation because of context switching.
+                - std::thread::hardware_concurrency(); // Indicates the number of concurrent threads supported by the hardware and OS.
+                    
+
+                 
+   
+                
+
+
+        
+
+
+
+        
