@@ -58,7 +58,7 @@
             - If the thread is not joinable, then the join() method will terminate the program.
             - Situations in which a thread is not joinable are the situations when
               the thread does not represent a thread of execution in OS.
-                a. Detached thread - sdetach() called on the thread
+                a. Detached thread - detach() called on the thread
                 b. std::thread object created by using the default constructor
                 c. thread that has been moved
                 (Threading is an OS specific concept. C++ <thread> library method calls translate to the OS level threading methods 
