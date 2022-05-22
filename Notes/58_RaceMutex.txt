@@ -1,0 +1,99 @@
+1. Race Condition:
+    Multiple threads accessing and modifying the shared resources at the same time. It is problematic because it can make the program 
+    behave against the intentions.
+
+    When multiple threads access the same resource, the output of the program depends upon the order in which the threads 
+    access the resource. If the access to the resource is not synchronized among threads, then the output becomes unpredictable. 
+    Without any synchronization mechanism, multiple threads will try to access and use the resource at the same time. This creates a 
+    Race Condition, which is not acceptable as the program behaviour is unpredictable. Hence the race conditions must be prevented.
+
+    Example:
+    1. Main thread and a child thread printing to the console using std::cout.
+        Main thread prints "From main thread: " << count << "\n";
+        Child thread prints "From child thread: " << count2 <<"\n";
+
+2. Mutex and lock guard:
+    Mutex helps to synchronize the access to the shared resource by using locks. 
+    
+    When one of the threads is using the resource then other threads should not be allowed to access it until the first thread is done. 
+    Mutex achieves this by using mutex locks. As a thread starts accessing the resource, it should lock the thread using mutex lock. 
+    Once, the thread is done, it should unlock the mutex.
+
+    Example:
+    2. Use mutex lock() and unlock() to synchronize the access to the std::cout in Example1
+
+    It can also happen that the resource gets locked forever if the code after the lock throws an exception. This can be prevented
+    by using std::lock_guard<>() that works with RAII (Resource Acquisition is Initialization). The mutex is always unlocked even if 
+    an exception is thrown.
+
+    Example:
+    3. Use std::lock_guard to synchronize the access to the std::cout in Example1
+
+3. Thread Safety:
+    Protection against modifications by different threads at the same time.
+
+    The code is considered thread safe if it runs as specified even if many threads are executing it simultaneously. The internal
+    shared resources are protected against different modifications at the same time.
+
+    std::cout used in the examples above is a global resource. It can also be used directly by any thread without using the 
+    thread safe interface created for accessing std::cout. So, the code in the examples above is not thread safe. 
+
+    In order to ensure thread safety, the resource must be bundled with the mutex completely. The interface bundled with the mutex 
+    should be the only way to access the shared resource.
+
+    Ensuring thread safety against data races:
+    1. Use mutex locks to synchronize the data access.
+    2. Never leak a handle of the data to the outside.
+        a. Never return it as a reference from the function.
+        b. Never pass it as a reference to a user defined function.
+    3. Design the interfaces properly.
+        Donot unlock the resource when the thread is still processing the data.
+        Example - 
+
+        class stack
+        {
+            int* _data;
+            std::mutex _mu;
+        public:
+        void pop(); // pops off the item, on top of the stack : Uses mutex lock - unlock
+        int& top(); // returns the item on top : Uses mutex lock - unlock
+        // ...
+        };
+
+        void function_1(stack& st)
+        {
+            int v = st.top();
+            st.pop();
+            process(v);
+        }
+
+        // Create multiple threads executing function_1
+        // When multple threads execute the function_1 for the same stack, it is possible that some items are popped off 
+        // without processing, which makes the thread unsafe.
+        // Solution is to keep the implementation of top and pop in a single function that is remove the function top() and 
+        // modify the function pop() to return the top item.
+        
+        class stack
+        {
+            int* _data;
+            std::mutex _mu;
+        public:
+        int& pop(); // ---- Though this is not exception safe, that's why the std::stack pop function does not return anything
+        // int& top(); // returns the item on top : Uses mutex lock - unlock
+        // ...
+        };
+
+        void function_1(stack& st)
+        {
+            int v = st.pop();
+            //st.pop();
+            process(v);
+        }
+
+    Example:
+    4. Write a thread safe interface for example1 that writes a file instead of std::cout. 
+
+
+
+
+

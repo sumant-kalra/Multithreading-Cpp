@@ -1,4 +1,4 @@
-#define THREAD_CONSTRUCTION 1
+#define THREAD_CONSTRUCTION 0
 #if THREAD_CONSTRUCTION
 
 #include <iostream>
