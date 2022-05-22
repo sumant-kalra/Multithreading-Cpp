@@ -1,6 +1,6 @@
 1. Race Condition:
-    Multiple threads accessing and modifying the shared resources at the same time. It is problematic because it can make the program 
-    behave against the intentions.
+    Multiple threads accessing and modifying the shared resources at the same time. It is problematic because it can cause undefined
+    behaviour in our program.
 
     When multiple threads access the same resource, the output of the program depends upon the order in which the threads 
     access the resource. If the access to the resource is not synchronized among threads, then the output becomes unpredictable. 
