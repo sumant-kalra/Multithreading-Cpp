@@ -1,19 +1,111 @@
 1. Deadlocks:
+
+    [Definition]:
+
     In concurrent computing, deadlock is any situation in which no thread can proceed because each waits for another thread, 
     including itself, to take action, such as sending a message or, more commonly, releasing a lock.
     
-    Situations that can result into deadlock: 
+    [Situations that can result into deadlock]: 
+
     1. Using multiple mutexes (for some reasons) for protecting a single shared resource.
-        Example -  Use two mutex locks for the fileOut class [Ex] and locking the mutex in different orders in two different functions.
+        Example - Use two mutex locks for the FileOut class [Ex] and locking the mutex in different orders in two different functions.
 
+    [Preventing deadlocks]:
 
-    Preventing deadlocks:
     1. Prefer locking a single mutex.
+        - Is it really needed to lock two mutexes at the same time (If no, then dont lock multiple  mutexes simultaneously).
     2. Avoid locking a mutex and then calling a user defined function.
-    3. Use std::lock() to lock more than one mutex.
-    4. Lock the mutex in the same order.
+        - It is possible that the user defined function locks some other mutex resulting into multiple mutexes locked simultaneously
+            or it may also try to lock the same mutex again.  
+    3. Use std::lock() to lock more than one mutex, and ask lock_guard to adopt to the lock.
+        - Locks a number of mutexes specified as argument using some deadlock avoidance algorithms.
+        - If std::lock() is used along with lock_guard then we need to tell lock_gaurd that the mutex is already locked, just adhere
+            to the existing lock, that is unlock the lock once you (lock_guard) goes out of scope.
+    4. Lock the mutexes in the same order for multiple threads if it is not possible to use std::lock()
+
+    [Locking granularity]:
+
+    The locking granularity must be appropriate.
+    1. Fine-grained lock: protects fine grained data. 
+        [Too fine-grained: Programming becomes tricky and more exposed to deadlocks]
+    2. Course-grained lock: protects big amounts of data.
+        [Too course-grained: Loosing opportunity of parallel computing as the threads spend more time waiting for the resources] 
 
 
 
-2. Unique lock
-3. Lazy Initialization
+2. Unique lock [lock_guard and unique_lock are wrappers over the mutex lockable objects.]
+    
+    [Mutex: Lockable objects]
+        - Use case: mutex.lock() and mutex.unlock() which is not recommended.
+    [lock_guard: Wrapper over mutex lockable objects]
+        - Locks the mutex at the constructor and unlock at the destructor.
+    [unique_lock: Wrapper over mutex lockable objects]
+        - Similar to lock_guard but provide more flexibilty to implement fine grained locking AT THE COST OF PERFORMANCE.
+        Features:
+            1. Can prevent the locking of mutex at the constructor call using the flag std::defer_lock. 
+            2. Can lock/unlock the mutex by explicit calls to the lock and unlock(if the mutex is locked) methods.
+
+    [Copying and Moving]
+        - mutex [No Copy, No Move] 
+        - lock_guards [No Copy, No Move]
+        - unique_lock [No Copy, MOVE constructor]
+            Moving a unique_lock means the responsiblity of the underlying mutex is transferred to a new unique_lock.
+
+3.  std::once_flag object and std::call_once() method
+    (a) std::once_flag object:  used in place of mutex objects for the situations when a certain piece of code (callable) 
+                                needs to be executed only once throughout the execution of the multithreaded application. 
+    (b) std::call_once() method: takes the std::once_flag object and the callable as arguments.
+    
+    The callable is executed only once by the first thread by std::call_once() method.
+    
+    It improves the performance by eliminating the redundant executions, which could have been made if it is not used.
+
+    Example - Useful in implementing the lazy initialization for file opening in the Multi-threading file output problem.
+
+4. Lazy Initialization
+    "Initialization upon first use."
+    In computer programming, lazy initialization is the tactic of delaying the creation of an object, the calculation of a value, 
+    or some other expensive process until the first time it is needed. Lazy initialization is primarily used to improve performance, 
+    avoid wasteful computation, and reduce program memory requirements.
+
+5. Implementing the lazy initialization for file opening in the Multi-threading file output problem
+    (a) Opening the file inside the print function because there is no need to open the file if print is not called at all.
+    (b) Multiple threads executing print function will try to open the file even it is already open, hence the file opening 
+        should also be synchronized among the threads using mutex.
+    (c) Define a separate mutex for file opening and unique_lock for fine grain locks. 
+        There can be different ways to implement file opening in print() function, the implement to locks follows but
+        ensure that the file opening and the test if the file is already opened are protected. [Careful design of interfaces]
+        For example, in the interface below:
+
+        // Lock Pos2
+        if(!file.is_open())
+        {   // Lock Pos1
+            file.open("outFile.txt");
+        }
+
+        [Lock Pos1]
+        Does not ensure thread safety.
+        If lock is at Lock Pos1 then it is still possible that the file is opened multiple times by multiple threads because it takes 
+        some time to open a file. While file is being opened by one of the thread, another threads can Pass the condition that the 
+        file is not open and wait for the mutex to unlock. As soon the mutex is unlocked, threads will open the file one by one.
+
+        [Lock Pos2]
+        Ensures the thread safety.
+        Ideal position for locking the mutex. Ensures that the file is opened only once.
+    
+    (d) Though the File class has become thread safe but there is a performance overhead of redundant locking and unlocking 
+        of the file open mutex because the file needs to be opened only once throughout the execution of the multithreaded 
+        application. If the file has been opened by any one of the thread already then there is no need to lock the mu_open mutex,
+        test for the condition if file is already open, and unlock the mu_open mutex.
+    (e) Use std::once_flag object and std::call_once() method to avoid this performance overhead.
+
+
+    
+            
+
+
+   
+
+
+
+

@@ -6,4 +6,6 @@
 
 build-debug/
 build-release/
+
+# IDE files
 .vscode/

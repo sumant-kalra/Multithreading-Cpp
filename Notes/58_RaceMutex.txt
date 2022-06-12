@@ -27,6 +27,8 @@
     by using std::lock_guard<>() that works with RAII (Resource Acquisition is Initialization). The mutex is always unlocked even if 
     an exception is thrown.
 
+    Note: lock_guard and unique_lock are wrappers over mutex lockable objects.
+
     Example:
     3. Use std::lock_guard to synchronize the access to the std::cout in Example1
 
