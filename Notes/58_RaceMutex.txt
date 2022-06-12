@@ -13,7 +13,8 @@
         Child thread prints "From child thread: " << count2 <<"\n";
 
 2. Mutex (MUtually EXclusive flag) and lock guard:
-    Mutex are lockable objects. Locking a mutex prevents other threads from locking it until it is unlocked.
+    Mutex are lockable objects. Locking a mutex prevents other threads from locking it until it is unlocked. Hence, if a thread 
+    tries to lock an already locked mutex, it waits for the mutex to become unlocked.
     Mutex helps to synchronize the access to the shared resource. 
     
     When one of the threads is using the resource then other threads should not be allowed to access it until the first thread is done. 
