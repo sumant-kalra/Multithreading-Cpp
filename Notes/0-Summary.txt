@@ -3,6 +3,7 @@
     1. Most Vexing Parse
     2. Resource Acquisition Is Initialization (RAII)
     3. Lazy Initialization: Initialization upon first use
+    4. Fine-grained lock & Coarse-grained lock; Appropriate Grain Size 
 
 [1] 
 [Fundamentals of Multithreading]
