@@ -1,4 +1,4 @@
-#define MUTEX_MAIN 1
+#define MUTEX_MAIN 0
 #if MUTEX_MAIN
 
 #include <iostream>
@@ -23,6 +23,7 @@ public:
         if (!m_file.is_open())
         {
             std::cerr << "File could not be opened\n";
+            exit(-1);
         }
     }
     ~FileOut()

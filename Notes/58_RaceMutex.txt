@@ -12,8 +12,9 @@
         Main thread prints "From main thread: " << count << "\n";
         Child thread prints "From child thread: " << count2 <<"\n";
 
-2. Mutex and lock guard:
-    Mutex helps to synchronize the access to the shared resource by using locks. 
+2. Mutex (MUtually EXclusive flag) and lock guard:
+    Mutex are lockable objects. Locking a mutex prevents other threads from locking it until it is unlocked.
+    Mutex helps to synchronize the access to the shared resource. 
     
     When one of the threads is using the resource then other threads should not be allowed to access it until the first thread is done. 
     Mutex achieves this by using mutex locks. As a thread starts accessing the resource, it should lock the thread using mutex lock. 

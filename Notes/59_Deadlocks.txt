@@ -1,0 +1,19 @@
+1. Deadlocks:
+    In concurrent computing, deadlock is any situation in which no thread can proceed because each waits for another thread, 
+    including itself, to take action, such as sending a message or, more commonly, releasing a lock.
+    
+    Situations that can result into deadlock: 
+    1. Using multiple mutexes (for some reasons) for protecting a single shared resource.
+        Example -  Use two mutex locks for the fileOut class [Ex] and locking the mutex in different orders in two different functions.
+
+
+    Preventing deadlocks:
+    1. Prefer locking a single mutex.
+    2. Avoid locking a mutex and then calling a user defined function.
+    3. Use std::lock() to lock more than one mutex.
+    4. Lock the mutex in the same order.
+
+
+
+2. Unique lock
+3. Lazy Initialization
