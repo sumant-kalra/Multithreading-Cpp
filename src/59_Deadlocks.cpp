@@ -1,4 +1,4 @@
-#define ONCE_MAIN 1
+#define ONCE_MAIN 0
 #define ONCE_REQ_MAIN 0
 #define UNIQUE_LOCK_MAIN_1 0
 #define DEADLOCKS_MAIN_1 0

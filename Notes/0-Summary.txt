@@ -34,6 +34,7 @@
             A child can be joined or detached only once. joinable()
             threadId; this_thread:getId(); anotherThread.Id(); this_thread::sleep_for(1s); 
                 using namespace std::literals::chrono::literals
+            Infinite Loop running as fast as it can
             Ensuring the thread joining or detaching before the destruction; 2 approaches
             Callables for the thread object constructor; Functor -- most_vexing_parse
             Passing arguments of callables to the thread object 
