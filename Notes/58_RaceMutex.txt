@@ -1,3 +1,8 @@
+0. Thread Safety or Thread Safe Code:
+    A multithreaded application code is said to be thread safe if the program behaves in the specified way irrespective of the 
+    number of threads simultaneously executing the code.
+    Some challenges in implementing 'Thread Safe' code are defined below. 
+
 1. Race Condition:
     Multiple threads accessing and modifying the shared resources at the same time. It is problematic because it can cause undefined
     behaviour in our program.

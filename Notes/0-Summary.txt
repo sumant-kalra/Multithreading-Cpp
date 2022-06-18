@@ -1,69 +1,57 @@
-[0]
 [C++ Things]
     1. Most Vexing Parse
     2. Resource Acquisition Is Initialization (RAII)
     3. Lazy Initialization: Initialization upon first use
     4. Fine-grained lock & Coarse-grained lock; Appropriate Grain Size 
 
-[1] 
-[Fundamentals of Multithreading]
-    Threads and processes as OS level concepts.
-    Multithreading: Concurrent tasks of a process run as separate threads in OS.
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-[2] 
-[Multithreading in C++ using <thread> library]
+[0] [Fundamentals of Multithreading]
+    0. Why Multithreading? parallelism; Performance
+    1. Threads and Processes as OS level concepts. Application and its parallel tasks abstracted as process and threads in OS
+    2. Single-threaded and Multi-threaded applications
+    3. Representation of process and threads in memory
+    4. Single-core and Multi-core CPUs - nThreadsPerCore
+    5. Context Switching - sameProcess, differentProcess, Saving&Restoring the execution State; Hyperthreading
+    6. Concurrency Models
+    7. Process Vs Threads : Multiprocessing vs Multithreading; Pros and Cons of Multithreading
 
- Example Program: "Implement a thread safe class for printing in a file"
-1. Creation of a child thread:
-    (a) Construct thread class object with the parameterized constructor. 
-        [Thread execution starts with the constructor call; Use Diagrams for visualization]
-    (b) The thread must be joined or detached with the parent thread, before it is destroyed.
+[Example Program] "Implement a thread safe class for printing in a file"
 
-2. Thread Safe Code: 
-    The program behaves in a specified way irrespective of the number of threads executing simultaneously.
+[1] [Multithreading in C++ using <thread> library]
+    0. Start/Create a new thread
+        (a) Parameterized Constructor
+        (d) Join or detach
+
+        Other aspects:
+            Plateform independent multithreaded code to implement multithreading applications. (posix threads for unix)
+            Start execution of a thread
+            Diagrams
+            Main thread owns resources
+            Joining the thread 
+            Detaching the thread
+            Must be joined or detached at the time of destruction
+            A child can be joined or detached only once. joinable()
+            threadId; this_thread:getId(); anotherThread.Id(); this_thread::sleep_for(1s); 
+                using namespace std::literals::chrono::literals
+            Ensuring the thread joining or detaching before the destruction; 2 approaches
+            Callables for the thread object constructor; Functor -- most_vexing_parse
+            Passing arguments of callables to the thread object 
+                (a) Pass by value 
+                (b) Pass by reference - std::ref() or address 
+                (c) std::move [std::threads cannot be copied but only moved]
+            std::thread::hardware_concurrency(); Oversubscription
+
+    1. Thread safety and Challenges
+        (a) Race Conditions: mutex, lock_gaurd, unique_lock (locking granularity)
+            Ensuring thread safety against race conditions(3)
+        (b) Deadlocks: std::lock()
+            Situations leading to deadlocks
+            Preventing deadlocks(4)
+            
+    2. Copy and Move
+        mutex, lock_guard, unique_lock
     
-    (a) No Race Conditions
-        
-        1. Mutex locks [No Copy; No move]
-            - MUtually EXclusive flag, which once locked can not be locked by any other thread until it is unlocked.
-            - Used to synchronize the threads access to the shared resources.
-            - lock() and unlock()
+    3. std::once_flag object and std::call_once() method
 
-            a. lock_gaurd [No Copy; No move]
-                - wrapper class over mutex objects
-                - Locks the mutex at the time of its construction and Unlocks the mutex at the time of destruction [RAII]
-                - Preferred over raw mutex objects
-            b. unique_lock [No Copy; Move - the underlying mutex]
-                - wrapper class over mutex objects
-                - provides flexibilty in locking and unlocking the mutex using explicit lock() and unlock() calls
-                - Performance overhead
-                - Preferred when implementing fine-locking granularity
-        
-        2. std::once_flag object and std::call_once() method
-                - std::once_flag object: used in place of mutex objects for the situations when a certain piece of code (callable) 
-                                         needs to be executed only once throughout the execution of the multithreaded application.
-                - std::call_once() method: takes the std::once_flag object and the callable as arguments.
-                                           The callable is executed only once by the first thread by std::call_once() method.
-                Improves the performance by eliminating the redundant executions, which could have been made if it is not used.
-        
-        3. Never leak a handle of the data to the outside.
-            - Never return it as a reference from the function.
-            - Never pass it as a reference to a user defined function.
-        
-        4. Design the interfaces properly.
-            - Donot unlock the resource when the thread is still processing the data.
-
-    (b) No Deadlocks
-
-        1. Prefer locking a single mutex at a time.
-        2. Avoid locking a mutex and then calling a user defined function.
-        3. Use std::lock() to lock more than one mutex, and ask lock_guard to adopt to the lock.
-            - Locks a number of mutexes specified as argument using some deadlock avoidance algorithms.
-            - If std::lock() is used along with lock_guard then we need to tell lock_gaurd that the mutex is already locked, just 
-              adopt the existing lock, that is unlock the lock once you (lock_guard) goes out of scope.
-        4. Lock the mutexes in the same order for multiple threads if it is not possible to use std::lock()
-
-
-
-
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
