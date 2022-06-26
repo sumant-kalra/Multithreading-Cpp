@@ -1,4 +1,4 @@
-#define CONDITIONS_MAIN 1
+#define CONDITIONS_MAIN 0
 #if CONDITIONS_MAIN
 
 #include <iostream>

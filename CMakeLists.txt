@@ -7,4 +7,5 @@ add_executable(runApp src/Main.cpp
                 src/58_ThreadConstruct.cpp
                 src/58_Mutex.cpp
                 src/59_Deadlocks.cpp
-                src/60_Conditions.cpp)
+                src/60_Conditions.cpp
+                src/Logger.cpp)
