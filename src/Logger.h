@@ -20,7 +20,11 @@ namespace log
     class Logger
     {
     private:
-        static Logger *m_loggerPtr;
+        static std::mutex s_mutex;
+
+        static Logger *s_loggerPtr;
+
+        static Logger *get();
 
         Logger() = default;
         ~Logger() = default;
@@ -28,47 +32,111 @@ namespace log
         Logger(const Logger &) = delete;
         Logger &operator=(const Logger &) = delete;
 
-        static Logger *get();
-
-        /// deleteInstance implementation is required to free the memory manually
-        /// because m_loggerPtr is a static variable in the data segment that
-        /// gets deleted only the end of the program, which means delete on
-        /// the heap allocated memory is called only at the termination of the program.
-        void logINFO(const std::string &message);
-        void logWARNING(const std::string &message);
-        void logERROR(const std::string &message);
-
     public:
-        static void logInfo(const std::string &message);
-        static void logWarning(const std::string &message);
-        static void logError(const std::string &message);
         static void deleteInstance();
     };
 
 }
 
-#if 0
-// Object created on Data Segment
 namespace log
 {
-    class Logger
+    class Logger5
     {
     private:
-        static std::mutex m_mutex;
+        static std::mutex s_mutex;
+        static std::once_flag s_once;
 
-        Logger() = default;
-        ~Logger() = default;
-        static Logger &get();
+        static Logger5 *s_loggerPtr;
 
-        void logINFO(const std::string &message);
-        void logWARNING(const std::string &message);
-        void logERROR(const std::string &message);
+        static Logger5 *get();
+
+        Logger5() = default;
+        ~Logger5() = default;
+
+        Logger5(const Logger5 &) = delete;
+        Logger5 &operator=(const Logger5 &) = delete;
 
     public:
-        static void logInfo(const std::string &message);
-        static void logWarning(const std::string &message);
-        static void logError(const std::string &message);
+        static void deleteInstance();
     };
 
 }
-#endif
+
+namespace log
+{
+    class Logger4
+    {
+    private:
+        static std::mutex s_mutex;
+
+        static Logger4 *s_loggerPtr;
+
+        static Logger4 *get();
+
+        Logger4() = default;
+        ~Logger4() = default;
+
+        Logger4(const Logger4 &) = delete;
+        Logger4 &operator=(const Logger4 &) = delete;
+
+    public:
+        static void deleteInstance();
+    };
+
+}
+
+namespace log
+{
+    class Logger3
+    {
+    private:
+        static std::mutex s_mutex;
+        static Logger3 *s_log;
+        static Logger3 *get();
+
+        Logger3() = default;
+        ~Logger3() = default;
+        Logger3(const Logger3 &) = delete;
+        Logger3 &operator=(const Logger3 &) = delete;
+
+    public:
+        /// deleteInstance implementation is required to free the memory manually
+        /// because m_loggerPtr is a static variable in the data segment that
+        /// gets deleted only the end of the program, which means delete on
+        /// the heap allocated memory is called only at the termination of the program.
+        static void deleteInstance();
+    };
+}
+
+namespace log
+{
+    class Logger2
+    {
+    private:
+        static std::mutex s_mutex;
+        static Logger2 &get();
+
+        Logger2() = default;
+        ~Logger2() = default;
+        Logger2(const Logger2 &) = delete;
+        Logger2 &operator=(const Logger2 &) = delete;
+    };
+}
+
+namespace log
+{
+    // Does not need to be synchronized as the instance is created at the start of the program in the data segment,
+    // before any thread calls the get() method
+    class Logger1
+    {
+    private:
+        static Logger1 s_log;
+        static Logger1 &get();
+
+        Logger1() = default;
+        ~Logger1() = default;
+        Logger1(const Logger1 &) = delete;
+        Logger1 &operator=(const Logger1 &) = delete;
+    };
+
+}

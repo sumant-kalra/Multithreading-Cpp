@@ -1,97 +1,117 @@
 #include <iostream>
 #include "Logger.h"
 
-log::Logger *log::Logger::m_loggerPtr = nullptr;
+log::Logger *log::Logger::s_loggerPtr = nullptr;
+std::mutex log::Logger::s_mutex;
 
 log::Logger *log::Logger::get()
 {
-    if (!m_loggerPtr)
-        m_loggerPtr = new Logger();
-    return m_loggerPtr;
+    if (!s_loggerPtr)
+    {
+        std::lock_guard<std::mutex> lock1(s_mutex);
+        if (!s_loggerPtr)
+            s_loggerPtr = new Logger();
+    }
+
+    return s_loggerPtr;
 }
 
 void log::Logger::deleteInstance()
 {
-    if (m_loggerPtr)
+    std::lock_guard<std::mutex> lock2(s_mutex);
+    if (s_loggerPtr)
     {
-        delete m_loggerPtr;
-        m_loggerPtr = nullptr;
+        delete s_loggerPtr;
+        s_loggerPtr = nullptr;
     }
 }
 
-void log::Logger::logINFO(const std::string &message)
+//////////////////////////////////////////////////////////////////////////////////////////////////
+std::mutex log::Logger5::s_mutex;
+log::Logger5 *log::Logger5::s_loggerPtr = nullptr;
+std::once_flag log::Logger5::s_once;
+
+log::Logger5 *log::Logger5::get()
 {
-    std::cout << "[INFO] " << message << "\n";
+    std::call_once(s_once, [&]()
+                   {
+                    if(!s_loggerPtr)
+                     s_loggerPtr = new Logger5(); });
+    return s_loggerPtr;
 }
 
-void log::Logger::logWARNING(const std::string &message)
+void log::Logger5::deleteInstance()
 {
-    std::cout << "[WARNING] " << message << "\n";
+    std::lock_guard<std::mutex> lock(s_mutex);
+
+    if (s_loggerPtr)
+    {
+        delete s_loggerPtr;
+        s_loggerPtr = nullptr;
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+log::Logger4 *log::Logger4::s_loggerPtr = new log::Logger4();
+std::mutex log::Logger4::s_mutex;
+
+log::Logger4 *log::Logger4::get()
+{
+    return s_loggerPtr;
 }
 
-void log::Logger::logERROR(const std::string &message)
+void log::Logger4::deleteInstance()
 {
-    std::cout << "[ERROR] " << message << "\n";
+    std::lock_guard<std::mutex> lock(s_mutex);
+
+    if (s_loggerPtr)
+    {
+        delete s_loggerPtr;
+        s_loggerPtr = nullptr;
+    }
 }
 
-void log::Logger::logInfo(const std::string &message)
+//////////////////////////////////////////////////////////////////////////////////////////////////
+std::mutex log::Logger3::s_mutex;
+log::Logger3 *log::Logger3::s_log = nullptr;
+
+log::Logger3 *log::Logger3::get()
 {
-    log::Logger::get()->logINFO(message);
+    std::lock_guard<std::mutex> lock1(s_mutex);
+    if (!s_log)
+    {
+        s_log = new Logger3();
+    }
+
+    return s_log;
 }
 
-void log::Logger::logWarning(const std::string &message)
+void log::Logger3::deleteInstance()
 {
-    log::Logger::get()->logWARNING(message);
+    std::lock_guard<std::mutex> lock2(s_mutex);
+    if (!s_log)
+    {
+        delete s_log;
+        s_log = nullptr;
+    }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
-void log::Logger::logError(const std::string &message)
+std::mutex log::Logger2::s_mutex;
+
+log::Logger2 &log::Logger2::get()
 {
-    log::Logger::get()->logERROR(message);
-}
-
-#if 0
-
-// Object created on Data segment
-
-std::mutex log::Logger::m_mutex;
-
-log::Logger &log::Logger::get()
-{
-    static Logger log;
+    // Inefficient as the mutex is needed only while the object creation
+    std::lock_guard<std::mutex> lock1(s_mutex);
+    static log::Logger2 log;
     return log;
 }
 
-void log::Logger::logINFO(const std::string &message)
-{
-    std::cout << "[INFO] " << message << "\n";
-}
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
-void log::Logger::logWARNING(const std::string &message)
-{
-    std::cout << "[WARNING] " << message << "\n";
-}
+log::Logger1 log::Logger1::s_log;
 
-void log::Logger::logERROR(const std::string &message)
+log::Logger1 &log::Logger1::get()
 {
-    std::cout << "[ERROR] " << message << "\n";
+    return s_log;
 }
-
-void log::Logger::logInfo(const std::string &message)
-{
-    std::lock_guard<std::mutex> lock1(m_mutex);
-    log::Logger::get().logINFO(message);
-}
-
-void log::Logger::logWarning(const std::string &message)
-{
-    std::lock_guard<std::mutex> lock2(m_mutex);
-    log::Logger::get().logWARNING(message);
-}
-
-void log::Logger::logError(const std::string &message)
-{
-    std::lock_guard<std::mutex> lock3(m_mutex);
-    log::Logger::get().logERROR(message);
-}
-
-#endif

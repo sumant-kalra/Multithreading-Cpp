@@ -1,24 +1,33 @@
+                            "Synchronize the object creation and deletion in a singleton"
+                            =============================================================
+
 [Making a thread safe lazy initialized singleton]
 
 Note:
 There can not be a common solution to implementation of thread safe singleton as thread safety also depends on the interface.
-Let's try to implement thread safety for a get() method with lazy initialization.
+Let's try to implement thread safety for the get() method of singleton with lazy initialization.
+Mind that synchronizing threads for get() method does not ensures thread safety for the complete interface.
 
-Terminology - 
+Terminology:
     Lazy Initialized Singleton: static object is created inside the get() function
     Thread Safety: Protecting the shared resource against dataraces and deadlocks.
 
-
-
-
+Problem Statement:
+    "Make the get() method of lazy initialized singleton with the instance on heap thread safe"
 
 Solution:
-    0. Thread safety can not be ensured until the implemented interface is correctly implemented.
-    1. Lets
+    0. Thread safety for the get() method must be ensured as in multithreading environment it might result multiple objects creation.
+        Method 1: Lock the mutex at the entrance of the get() method.
+                    Limitation: Results in performance overhead as the threads needs to be synchronized only once during the object
+                                creation but the mutex is locked and unlocked everytime get() method is called, which is redundant.
+        Method 2: Avoid lazy initialization. Create the object at the class creation itself. Then there is no need to synchronize the
+                object creation because it is created at the start of the program itself.
+                    Limitation: Inefficient as it is possible that developer might never use it. Lazy initialization is better.
+        Method 3: Use std::call_once from <mutex> to ensure that object creation code is executed only once.
+                    Limitation: Does not work if the instance is deleted once by any thread.
+        Method 4: Use nullcheck before locking the mutex. That is if the object is already created then there is no need to lock the 
+                mutex. If it is not created yet, the mutex should be locked and object be created.
+                    Limitation: NONE
     
-    1. Implement a lazy initialized singleton with the shared object created on heap.
-    2. Use mutex with lock guard to protect the shared object creation inside get() method.
-        If the threads are not synchronized for creation of the objects then each object may end up creating objects.
-    3. Locking and unlocking mutex everytime a thread calls the get() method causes a performance overhead as the object needs to be created
-        only once by any of the thread, there is no need to 
-        
+    1. Similarly the deleteInstance() method should be protected with the mutex
+
