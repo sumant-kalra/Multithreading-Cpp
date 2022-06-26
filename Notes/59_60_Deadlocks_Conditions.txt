@@ -99,8 +99,43 @@
         test for the condition if file is already open, and unlock the mu_open mutex.
     (e) Use std::once_flag object and std::call_once() method to avoid this performance overhead.
 
+6. Condition variables + unique_lock wrapper over mutex
+    A condition variable is an object able to block the calling thread until notified to resume.
+    It blocks the thread by locking the mutex using the unique_lock. The lock is maintained by the condition variable until it is
+    notified. 
 
+
+
+
+    When the action to be performed in one thread depends upon some action performed by another thread.
+
+    Case 1: Implementation without using Condition variables    
+
+            Define a variable in global scope (accessible to both the threads) that should be changed once the thread1 completes
+            the contemplated action. The thread2 should be continously monitoring the variable for change in it's value by using loop.
+            As soon as the value of the variable is changed by one thread, it is detected by the other thread.
+            Issues with the approach:
+            - if the loop is run continously as fast as it can then it will result in 100% memory usage, which is problematic.
+            - to prevent this situation, we can make the thread to sleep for some time 't' in the loop.
+            - value of 't' is depends upon the problem being solved, and it can not be determined easily.
+            - if 't' is too small, the original problem of high memory usage persists, and if it is tool large then it may miss
+              to detect the change at all.
+            
+            There are some synchronization problems which can not be solved without using condition variables.
+            
     
+    Case 2: Using Condition Variables in <condition_variable>
+
+            Define a condition variable that can be accessed by the threads that need to communicate with each other.
+
+
+
+
+
+    Note that: 
+    Condition Variables are mandatory for solving certain synchronization problems. 
+    Do not confuse them as Optimization technique.
+
             
 
 

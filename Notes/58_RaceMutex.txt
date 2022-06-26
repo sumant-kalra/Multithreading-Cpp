@@ -18,10 +18,13 @@
         Child thread prints "From child thread: " << count2 <<"\n";
 
 2. Mutex (MUtually EXclusive flag) and lock guard:
+    
+    "A Mutex for a shared resource."
+
     Mutex are lockable objects. Locking a mutex prevents other threads from locking it until it is unlocked. Hence, if a thread 
     tries to lock an already locked mutex, it waits for the mutex to become unlocked.
     Mutex helps to synchronize the access to the shared resource. 
-    
+        
     When one of the threads is using the resource then other threads should not be allowed to access it until the first thread is done. 
     Mutex achieves this by using mutex locks. As a thread starts accessing the resource, it should lock the thread using mutex lock. 
     Once, the thread is done, it should unlock the mutex.
@@ -57,6 +60,7 @@
         b. Never pass it as a reference to a user defined function.
     3. Design the interfaces properly.
         Donot unlock the resource when the thread is still processing the data.
+        Protect the access to shared resource end to end by it's respective mutex.
         Example - 
 
         class stack

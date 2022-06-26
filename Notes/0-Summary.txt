@@ -44,15 +44,19 @@
             std::thread::hardware_concurrency(); Oversubscription
 
     1. Thread safety and Challenges
-        (a) Race Conditions: mutex, lock_gaurd, unique_lock (locking granularity)
+        (a) Race Conditions: 
+            1. mutex, lock_gaurd, unique_lock (locking granularity)
+            2. std::once_flag object and std::call_once() method [Optimization]
+            3. condition_variable + unique_lock wrapper over mutex
+
             Ensuring thread safety against race conditions(3)
+
         (b) Deadlocks: std::lock()
             Situations leading to deadlocks
             Preventing deadlocks(4)
             
     2. Copy and Move
         mutex, lock_guard, unique_lock
-    
-    3. std::once_flag object and std::call_once() method
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
