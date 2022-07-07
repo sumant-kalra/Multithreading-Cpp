@@ -60,16 +60,7 @@ log::Logger4 *log::Logger4::get()
     return s_loggerPtr;
 }
 
-void log::Logger4::deleteInstance()
-{
-    std::lock_guard<std::mutex> lock(s_mutex);
-
-    if (s_loggerPtr)
-    {
-        delete s_loggerPtr;
-        s_loggerPtr = nullptr;
-    }
-}
+// Do not implement the deleteInstance() method for eager loading
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 std::mutex log::Logger3::s_mutex;

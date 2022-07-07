@@ -79,8 +79,7 @@ namespace log
         Logger4(const Logger4 &) = delete;
         Logger4 &operator=(const Logger4 &) = delete;
 
-    public:
-        static void deleteInstance();
+        //  Do not implement the deleteInstance() method for eager loading
     };
 
 }

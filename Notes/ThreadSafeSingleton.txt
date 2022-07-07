@@ -1,5 +1,34 @@
-                            "Synchronize the object creation and deletion in a singleton"
-                            =============================================================
+                                    Thread Safe Singleton (against object creation and deletion)
+                                ===================================================================== 
+
+* Needed only when Lazy Initialized
+
+The singleton's get() method is thread-safe against object creation if the object is not lazy initialized. 
+In eager loading, the static object of the class is created at the beginning of the program itself. Hence, It is not possible for any
+other thread to create the object again.
+
+Object creation in data segment:
+- Eager Loading : Thread safe against object creation
+- Lazy Loading  : Use mutex lock to protect the get() method. Multiple threads can create multiple static objects if the access 
+                  to get() method is not synchronized. However, this technique is inefficient because the mutex needs to be locked 
+                  everytime get() is called by any thread, even though the mutex lock and unlock was required only once during the 
+                  object creation. Locking and unlocking mutex is redundant once the object is created.
+
+Object creation in heap memory: [New - Delete] : Creation and Deletion both must be made thread safe
+- Eager loading : Thread safe against object creation. 
+                  [Do not create interface to delete the object since the object is created at the beginning of the program, it should
+                  last till the end of the program. If it is implemented and used, then other threads wont be able to use the singleton
+                  because there is no way to create the object again.]
+- Lazy Loading  : Use mutex lock to protect the get() method. Lock the mutex only if the object is not created already, to remove the
+                  redundant mutex locks after object creation.
+                  [Create an interface to delete the object and make it thread safe. The interface is required here because the 
+                  object is lazy initialized, developer can delete the object if it is not required anymore. The object will be 
+                  re-created in the next call to get()]
+
+
+                            
+                    "Synchronize the object creation and deletion in a singleton" -- Needed only if lazy initialized
+                    =================================================================================================
 
 [Making a thread safe lazy initialized singleton]
 
